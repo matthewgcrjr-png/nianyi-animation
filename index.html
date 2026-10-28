@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080d16">
+  <meta name="description" content="念一动漫：从小说文案到漫剧成片的一站式 AI 创作台。">
+  <title>念一动漫｜把小说，变成能发布的漫剧</title>
+  <style>
+    :root {
+      --ink: #080d16;
+      --ink-2: #0d1420;
+      --ink-3: #111b2a;
+      --paper: #f6f4ed;
+      --paper-2: #ebe9e1;
+      --text: #f5f7fb;
+      --muted: #a7b0bd;
+      --muted-dark: #59616d;
+      --line: rgba(236, 242, 248, .13);
+      --line-dark: #d9d8d0;
+      --orange: #ff9252;
+      --orange-soft: #ffd7bb;
+      --mint: #bdebd5;
+      --blue: #91b9ff;
+      --success: #74d6a7;
+      --serif: Georgia, "Songti SC", "STSong", serif;
+      --sans: Inter, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      --shadow: 0 26px 70px rgba(0, 0, 0, .28);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.modal-open { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .container { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--orange);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 24px; height: 1px; background: currentColor; }
+    .section-kicker { color: var(--orange); font-size: 12px; font-weight: 800; letter-spacing: .16em; }
+    .section-title {
+      max-width: 720px;
+      margin: 17px 0 18px;
+      color: var(--text);
+      font-family: var(--serif);
+      font-size: clamp(34px, 5vw, 62px);
+      font-weight: 700;
+      letter-spacing: -.035em;
+      line-height: 1.08;
+    }
+    .section-title em { color: var(--orange-soft); font-style: normal; }
+    .section-copy { max-width: 620px; color: var(--muted); font-size: 16px; }
+
+    .site-nav {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      width: 100%;
+      border-bottom: 1px solid transparent;
+      transition: background .25s ease, border-color .25s ease;
+    }
+    .site-nav.is-scrolled { background: rgba(8, 13, 22, .93); border-color: var(--line); backdrop-filter: blur(16px); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; min-height: 76px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 800; letter-spacing: .04em; }
+    .brand-mark {
+      display: grid;
+      width: 35px;
+      height: 35px;
+      place-items: center;
+      border: 1px solid rgba(255, 146, 82, .62);
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+    .brand-word small { display: block; margin-top: -4px; color: var(--muted); font-size: 9px; font-weight: 500; letter-spacing: .22em; }
+    .nav-links { display: flex; align-items: center; gap: 27px; color: var(--muted); font-size: 13px; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { min-height: 40px; padding: 0 17px; font-size: 12px; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 22px;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: #17100c; background: var(--orange); }
+    .button-primary:hover { background: #ffa66d; }
+    .button-quiet { color: var(--text); background: transparent; border-color: var(--line); }
+    .button-quiet:hover { border-color: rgba(255, 146, 82, .65); background: rgba(255, 146, 82, .08); }
+    .button-arrow::after { content: "↗"; font-size: 16px; }
+
+    .hero {
+      position: relative;
+      min-height: 760px;
+      padding: 164px 0 90px;
+      overflow: hidden;
+      background: var(--ink);
+    }
+    .hero::before {
+      position: absolute;
+      top: 0;
+      right: 15%;
+      width: 1px;
+      height: 100%;
+      background: rgba(255, 255, 255, .055);
+      content: "";
+    }
+    .hero::after {
+      position: absolute;
+      right: 4%;
+      bottom: 7%;
+      width: 190px;
+      height: 1px;
+      background: var(--orange);
+      content: "";
+      opacity: .7;
+    }
+    .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: .92fr 1.08fr; gap: 70px; align-items: center; }
+    .hero h1 { max-width: 620px; margin: 24px 0; color: var(--text); font-family: var(--serif); font-size: clamp(45px, 6vw, 82px); font-weight: 700; letter-spacing: -.06em; line-height: .98; }
+    .hero h1 span { color: var(--orange-soft); }
+    .hero-lead { max-width: 525px; margin: 0 0 30px; color: var(--muted); font-size: 17px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 36px; }
+    .hero-notes { display: flex; flex-wrap: wrap; gap: 16px 24px; color: var(--muted); font-size: 12px; }
+    .hero-note { display: inline-flex; align-items: center; gap: 8px; }
+    .hero-note::before { content: ""; width: 6px; height: 6px; background: var(--success); }
+
+    .studio-window { position: relative; border: 1px solid rgba(240, 245, 250, .18); background: #0b121e; box-shadow: var(--shadow); }
+    .studio-window::before { position: absolute; z-index: -1; inset: 28px -27px -27px 27px; border: 1px solid rgba(255, 146, 82, .2); content: ""; }
+    .window-top { display: flex; align-items: center; justify-content: space-between; min-height: 43px; padding: 0 14px; border-bottom: 1px solid var(--line); background: #0e1725; color: var(--muted); font-size: 10px; letter-spacing: .08em; }
+    .window-title { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-weight: 800; }
+    .window-title i { display: block; width: 7px; height: 7px; background: var(--success); border-radius: 50%; box-shadow: 0 0 0 3px rgba(116, 214, 167, .1); }
+    .window-dots { display: flex; gap: 5px; }
+    .window-dots i { width: 7px; height: 7px; border: 1px solid var(--muted); border-radius: 50%; }
+    .window-body { display: grid; grid-template-columns: 108px 1fr; min-height: 372px; }
+    .studio-side { padding: 18px 10px; border-right: 1px solid var(--line); background: #0b121e; }
+    .side-label { margin: 5px 7px 13px; color: #6f7987; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+    .studio-tab { display: flex; align-items: center; gap: 8px; width: 100%; margin: 3px 0; padding: 9px 8px; border: 0; border-radius: 1px; color: var(--muted); background: transparent; font-size: 11px; text-align: left; }
+    .studio-tab:hover, .studio-tab.is-active { color: var(--text); background: #182335; }
+    .studio-tab b { display: grid; width: 18px; height: 18px; place-items: center; border: 1px solid currentColor; font-size: 9px; font-weight: 500; }
+    .studio-main { padding: 22px 23px; background: #101a29; }
+    .studio-toolbar { display: flex; align-items: start; justify-content: space-between; gap: 18px; margin-bottom: 19px; }
+    .studio-toolbar h3 { margin: 0; color: var(--text); font-size: 18px; letter-spacing: -.03em; }
+    .studio-toolbar p { margin: 3px 0 0; color: var(--muted); font-size: 10px; }
+    .status-chip { padding: 5px 8px; border: 1px solid rgba(116, 214, 167, .28); color: var(--success); font-size: 9px; white-space: nowrap; }
+    .studio-panel { display: none; }
+    .studio-panel.is-active { display: block; animation: panel-in .25s ease both; }
+    @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .prompt-box { min-height: 67px; padding: 12px; border: 1px solid rgba(145, 185, 255, .32); background: #0c1522; }
+    .prompt-label { display: block; margin-bottom: 5px; color: var(--blue); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+    .prompt-text { color: #d8e0ed; font-size: 11px; line-height: 1.55; }
+    .prompt-text strong { color: var(--orange-soft); font-weight: 600; }
+    .panel-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 11px; }
+    .mini-card { min-height: 82px; padding: 11px; border: 1px solid var(--line); background: #0e1725; }
+    .mini-card small { display: block; margin-bottom: 9px; color: var(--muted); font-size: 9px; }
+    .mini-card b { display: block; color: var(--text); font-size: 13px; }
+    .mini-card span { display: block; margin-top: 3px; color: var(--success); font-size: 10px; }
+    .asset-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .asset { min-height: 110px; padding: 8px; border: 1px solid var(--line); background: #0e1725; }
+    .asset-visual { position: relative; height: 60px; margin-bottom: 7px; overflow: hidden; background: #1c3340; }
+    .asset-visual::before, .asset-visual::after { position: absolute; content: ""; }
+    .asset-visual::before { left: 11px; bottom: 0; width: 65%; height: 72%; background: #314b4a; clip-path: polygon(0 100%, 47% 0, 100% 100%); }
+    .asset-visual::after { top: 11px; right: 14px; width: 13px; height: 13px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 5px rgba(255, 146, 82, .12); }
+    .asset:nth-child(2) .asset-visual { background: #2b253b; }
+    .asset:nth-child(2) .asset-visual::before { width: 30px; height: 44px; left: 42%; bottom: -2px; border-radius: 45% 45% 15% 15%; background: #d49a77; clip-path: none; }
+    .asset:nth-child(2) .asset-visual::after { top: 4px; right: auto; left: 45%; width: 24px; height: 24px; background: #302943; }
+    .asset:nth-child(3) .asset-visual { background: #263b32; }
+    .asset:nth-child(3) .asset-visual::before { left: 20%; bottom: 12px; width: 60%; height: 8px; background: var(--orange-soft); clip-path: none; transform: rotate(-12deg); }
+    .asset:nth-child(3) .asset-visual::after { top: 12px; right: 28%; width: 6px; height: 32px; background: #d8c99b; box-shadow: 9px 8px 0 #d8c99b; }
+    .asset b { color: var(--text); font-size: 9px; font-weight: 600; }
+    .json-box { min-height: 203px; padding: 13px; overflow: hidden; border: 1px solid var(--line); background: #0b121e; color: #c6d6e8; font-family: "SFMono-Regular", Consolas, monospace; font-size: 10px; line-height: 1.7; }
+    .json-key { color: var(--blue); }
+    .json-value { color: var(--orange-soft); }
+    .timeline { display: grid; grid-template-columns: 1.1fr 1fr .75fr; gap: 7px; margin-top: 11px; }
+    .timeline-card { height: 48px; padding: 7px; border: 1px solid var(--line); background: #0e1725; }
+    .timeline-card b { display: block; color: var(--text); font-size: 9px; }
+    .timeline-card span { color: var(--muted); font-size: 8px; }
+    .timeline-card:first-child { border-color: rgba(255, 146, 82, .5); }
+
+    .signal-strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--ink-2); }
+    .signal-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .signal-item { min-height: 120px; padding: 27px 24px; border-right: 1px solid var(--line); }
+    .signal-item:last-child { border-right: 0; }
+    .signal-item b { display: block; margin-bottom: 3px; color: var(--text); font-family: var(--serif); font-size: 24px; }
+    .signal-item span { color: var(--muted); font-size: 12px; }
+    .signal-item i { color: var(--orange); font-style: normal; }
+
+    .section { padding: 118px 0; }
+    .paper-section { color: #151820; background: var(--paper); }
+    .paper-section .section-title { color: #171b24; }
+    .paper-section .section-copy { color: var(--muted-dark); }
+    .paper-section .eyebrow { color: #c76232; }
+    .pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 60px; }
+    .pain-card { min-height: 245px; padding: 28px; border: 1px solid var(--line-dark); background: #f0efe8; }
+    .pain-card:nth-child(2) { background: #e8eee9; }
+    .pain-card:nth-child(3) { background: #f1e9e2; }
+    .pain-index { color: #bdc0ba; font-family: var(--serif); font-size: 40px; line-height: 1; }
+    .pain-card h3 { margin: 50px 0 9px; color: #171b24; font-family: var(--serif); font-size: 24px; }
+    .pain-card p { max-width: 260px; margin: 0; color: var(--muted-dark); font-size: 13px; }
+    .pain-result { display: flex; align-items: center; gap: 10px; margin-top: 14px; color: #c76232; font-size: 12px; font-weight: 800; }
+    .pain-result::before { content: "→"; }
+
+    .workflow-section { background: var(--ink-2); }
+    .workflow-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; }
+    .workflow-head .section-copy { max-width: 440px; margin-bottom: 7px; }
+    .workflow-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; margin-top: 56px; }
+    .workflow-list { border-top: 1px solid var(--line); }
+    .workflow-step { display: grid; grid-template-columns: 42px 1fr 20px; gap: 12px; align-items: center; width: 100%; padding: 17px 0; border: 0; border-bottom: 1px solid var(--line); color: var(--muted); background: transparent; text-align: left; }
+    .workflow-step:hover, .workflow-step.is-active { color: var(--text); }
+    .workflow-step.is-active { color: var(--orange-soft); }
+    .step-no { font-family: var(--serif); font-size: 17px; }
+    .step-name { font-size: 14px; font-weight: 700; }
+    .step-arrow { color: var(--orange); font-size: 18px; opacity: 0; transition: opacity .2s ease; }
+    .workflow-step.is-active .step-arrow { opacity: 1; }
+    .workflow-stage { min-height: 370px; padding: 28px; border: 1px solid var(--line); background: #0c1522; }
+    .stage-top { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 31px; }
+    .stage-no { color: var(--orange); font-family: var(--serif); font-size: 45px; line-height: 1; }
+    .stage-top h3 { margin: 0; color: var(--text); font-family: var(--serif); font-size: 29px; }
+    .stage-top p { max-width: 320px; margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .stage-content { display: grid; grid-template-columns: 1.07fr .93fr; gap: 14px; }
+    .stage-note { min-height: 180px; padding: 17px; border: 1px solid var(--line); background: #101d2c; }
+    .stage-note-label { margin-bottom: 13px; color: var(--blue); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .stage-note p { margin: 0; color: #d8e0ed; font-size: 13px; line-height: 1.75; }
+    .stage-output { min-height: 180px; padding: 14px; border: 1px solid rgba(255, 146, 82, .34); background: #111925; }
+    .stage-output-top { display: flex; justify-content: space-between; margin-bottom: 18px; color: var(--muted); font-size: 10px; }
+    .stage-output-top b { color: var(--success); font-weight: 500; }
+    .stage-bars { display: grid; gap: 9px; }
+    .stage-bar { height: 28px; padding: 6px 9px; border-left: 2px solid var(--orange); background: #1b2a3c; color: #dfe7f1; font-size: 10px; }
+    .stage-bar:nth-child(2) { width: 87%; border-color: var(--mint); }
+    .stage-bar:nth-child(3) { width: 70%; border-color: var(--blue); }
+
+    .proof-section { background: var(--paper); color: #171b24; }
+    .proof-section .section-title { color: #171b24; }
+    .proof-section .section-copy { color: var(--muted-dark); }
+    .proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; margin-top: 55px; }
+    .proof-panel { border: 1px solid var(--line-dark); background: #efeee7; }
+    .proof-panel-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 17px; border-bottom: 1px solid var(--line-dark); color: #68707c; font-size: 11px; }
+    .proof-panel-head b { color: #171b24; font-size: 12px; }
+    .proof-copy { min-height: 285px; padding: 22px; color: #424a54; font-family: var(--serif); font-size: 20px; line-height: 1.7; }
+    .proof-copy mark { padding: 1px 4px; color: #9d4c24; background: #ffd8bb; }
+    .proof-json { min-height: 285px; padding: 21px; overflow: hidden; color: #2f5563; background: #e5eee9; font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; line-height: 1.85; }
+    .proof-json .k { color: #8f5f35; }
+    .proof-json .s { color: #2e6f66; }
+    .proof-json .n { color: #65708d; }
+    .proof-foot { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 21px 21px; }
+    .proof-tag { padding: 6px 8px; border: 1px solid #c5d5c9; color: #3b6e62; font-size: 10px; }
+
+    .capacity-section { background: #101926; }
+    .capacity-grid { display: grid; grid-template-columns: .87fr 1.13fr; gap: 70px; align-items: center; }
+    .capacity-card { padding: 28px; border: 1px solid var(--line); background: #0c1522; }
+    .capacity-top { display: flex; align-items: end; justify-content: space-between; margin-bottom: 26px; }
+    .capacity-top span { color: var(--muted); font-size: 12px; }
+    .capacity-number { color: var(--orange-soft); font-family: var(--serif); font-size: 57px; line-height: .9; }
+    .capacity-number small { margin-left: 6px; color: var(--muted); font-family: var(--sans); font-size: 12px; }
+    input[type="range"] { width: 100%; accent-color: var(--orange); }
+    .range-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
+    .capacity-result { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
+    .capacity-stat { padding: 14px; border: 1px solid var(--line); }
+    .capacity-stat b { display: block; color: var(--text); font-family: var(--serif); font-size: 23px; }
+    .capacity-stat span { color: var(--muted); font-size: 10px; }
+    .capacity-foot { margin: 20px 0 0; color: var(--muted); font-size: 11px; }
+    .capacity-foot strong { color: var(--success); font-weight: 600; }
+
+    .features-section { background: var(--ink); }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 56px; }
+    .feature-card { min-height: 216px; padding: 23px; border: 1px solid var(--line); background: var(--ink-2); transition: border-color .2s ease, transform .2s ease; }
+    .feature-card:hover { border-color: rgba(255, 146, 82, .55); transform: translateY(-3px); }
+    .feature-icon { display: grid; width: 30px; height: 30px; margin-bottom: 35px; place-items: center; border: 1px solid rgba(255, 146, 82, .6); color: var(--orange); font-size: 12px; }
+    .feature-card h3 { margin: 0 0 8px; color: var(--text); font-family: var(--serif); font-size: 21px; }
+    .feature-card p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    .audience-section { color: #171b24; background: var(--paper); }
+    .audience-section .section-title { color: #171b24; }
+    .audience-section .section-copy { color: var(--muted-dark); }
+    .audience-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; margin-top: 54px; }
+    .audience-card { min-height: 165px; padding: 19px; border: 1px solid var(--line-dark); background: #f0efe8; }
+    .audience-card:nth-child(2) { background: #e9efeb; }
+    .audience-card:nth-child(3) { background: #f2eae3; }
+    .audience-card:nth-child(4) { background: #e8edf4; }
+    .audience-card span { color: #9b9d98; font-family: var(--serif); font-size: 26px; }
+    .audience-card h3 { margin: 33px 0 5px; color: #171b24; font-family: var(--serif); font-size: 18px; }
+    .audience-card p { margin: 0; color: var(--muted-dark); font-size: 11px; }
+
+    .faq-section { background: var(--ink-2); }
+    .faq-wrap { max-width: 820px; }
+    .faq-list { margin-top: 45px; border-top: 1px solid var(--line); }
+    .faq-item { border-bottom: 1px solid var(--line); }
+    .faq-question { display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; min-height: 68px; padding: 0; border: 0; color: var(--text); background: transparent; font-size: 14px; font-weight: 700; text-align: left; }
+    .faq-question::after { content: "+"; color: var(--orange); font-size: 22px; font-weight: 300; transition: transform .2s ease; }
+    .faq-item.is-open .faq-question::after { transform: rotate(45deg); }
+    .faq-answer { max-height: 0; overflow: hidden; color: var(--muted); font-size: 13px; transition: max-height .3s ease; }
+    .faq-answer p { margin: 0 42px 22px 0; }
+
+    .closing { position: relative; padding: 120px 0 134px; overflow: hidden; text-align: center; background: var(--orange); color: #17100c; }
+    .closing::before { position: absolute; top: 0; left: 10%; width: 1px; height: 100%; background: rgba(23, 16, 12, .16); content: ""; }
+    .closing::after { position: absolute; top: 0; right: 14%; width: 1px; height: 100%; background: rgba(23, 16, 12, .16); content: ""; }
+    .closing h2 { position: relative; z-index: 1; max-width: 780px; margin: 0 auto 22px; font-family: var(--serif); font-size: clamp(38px, 6vw, 74px); letter-spacing: -.05em; line-height: 1.02; }
+    .closing p { position: relative; z-index: 1; max-width: 520px; margin: 0 auto 29px; font-size: 15px; }
+    .closing .button-primary { color: var(--orange); background: #17100c; }
+    .closing .button-primary:hover { background: #29201b; }
+    .closing-note { position: relative; z-index: 1; margin-top: 20px; font-size: 11px; opacity: .72; }
+
+    footer { padding: 27px 0; color: var(--muted); background: var(--ink); font-size: 11px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+
+    .modal-backdrop { position: fixed; z-index: 50; inset: 0; display: grid; padding: 24px; place-items: center; background: rgba(4, 7, 12, .78); opacity: 0; visibility: hidden; transition: opacity .2s ease, visibility .2s ease; }
+    .modal-backdrop.is-open { opacity: 1; visibility: visible; }
+    .modal { position: relative; width: min(470px, 100%); padding: 31px; border: 1px solid rgba(255, 146, 82, .4); background: #101a29; box-shadow: var(--shadow); transform: translateY(10px); transition: transform .2s ease; }
+    .modal-backdrop.is-open .modal { transform: translateY(0); }
+    .modal-close { position: absolute; top: 14px; right: 15px; width: 28px; height: 28px; border: 0; color: var(--muted); background: transparent; font-size: 22px; }
+    .modal h2 { margin: 0 0 7px; font-family: var(--serif); font-size: 30px; }
+    .modal-lead { margin: 0 0 23px; color: var(--muted); font-size: 13px; }
+    .form-row { display: grid; gap: 7px; margin-top: 14px; }
+    .form-row label { color: var(--muted); font-size: 11px; }
+    .form-row input { width: 100%; min-height: 46px; padding: 0 12px; border: 1px solid var(--line); outline: 0; color: var(--text); background: #0b121e; }
+    .form-row input:focus { border-color: var(--orange); }
+    .modal .button { width: 100%; margin-top: 20px; }
+    .form-note { margin: 14px 0 0; color: #798595; font-size: 10px; line-height: 1.5; }
+    .success-message { display: none; padding: 18px 0 5px; color: var(--success); font-size: 14px; }
+    .success-message.is-visible { display: block; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .hero-grid, .capacity-grid { grid-template-columns: 1fr; gap: 55px; }
+      .hero { min-height: auto; padding-top: 135px; }
+      .hero-copy { max-width: 680px; }
+      .hero::before { right: 8%; }
+      .workflow-layout { grid-template-columns: 1fr; gap: 30px; }
+      .workflow-stage { min-height: auto; }
+      .capacity-grid { gap: 35px; }
+    }
+    @media (max-width: 720px) {
+      .container { width: min(100% - 32px, 560px); }
+      .nav-inner { min-height: 68px; }
+      .nav-cta { min-height: 36px; padding: 0 12px; }
+      .hero { padding: 119px 0 68px; }
+      .hero h1 { font-size: clamp(43px, 14vw, 68px); }
+      .hero-lead { font-size: 15px; }
+      .hero-actions .button { width: 100%; }
+      .studio-window::before { inset: 18px -12px -14px 12px; }
+      .window-body { grid-template-columns: 72px 1fr; }
+      .studio-side { padding: 13px 6px; }
+      .studio-tab { justify-content: center; padding: 9px 3px; }
+      .studio-tab span { display: none; }
+      .studio-main { padding: 17px 13px; }
+      .studio-toolbar h3 { font-size: 15px; }
+      .panel-row, .stage-content, .proof-grid { grid-template-columns: 1fr; }
+      .asset-row { gap: 5px; }
+      .asset { padding: 5px; }
+      .asset b { font-size: 8px; }
+      .signal-grid { grid-template-columns: repeat(2, 1fr); }
+      .signal-item { min-height: 102px; padding: 20px 14px; }
+      .signal-item:nth-child(2) { border-right: 0; }
+      .signal-item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .section { padding: 78px 0; }
+      .pain-grid, .feature-grid, .audience-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 38px; }
+      .pain-card { min-height: 190px; }
+      .pain-card h3 { margin-top: 31px; }
+      .workflow-head { display: block; }
+      .workflow-head .section-copy { margin-top: 20px; }
+      .workflow-stage { padding: 20px 16px; }
+      .stage-top { display: block; }
+      .stage-top h3 { margin-top: 14px; font-size: 25px; }
+      .stage-top p { max-width: none; }
+      .proof-copy { min-height: 220px; font-size: 17px; }
+      .proof-json { min-height: 240px; font-size: 10px; }
+      .capacity-card { padding: 21px; }
+      .closing { padding: 90px 0 100px; }
+      .closing h2 { font-size: clamp(39px, 12vw, 65px); }
+      .footer-inner { display: block; }
+      .footer-inner > span { display: block; margin-top: 10px; }
+    }
+
+    /* visual refit: glass product presentation */
+    :root {
+      --ink: #05070d;
+      --ink-2: #0a0f18;
+      --ink-3: #111827;
+      --paper: #0a0f18;
+      --paper-2: #101827;
+      --line: rgba(255, 255, 255, .13);
+      --line-dark: rgba(255, 255, 255, .14);
+      --orange: #f5b84d;
+      --orange-soft: #ffe3a6;
+      --mint: #94e2c1;
+      --blue: #9fc6ff;
+    }
+    body { background: #05070d; }
+    .site-nav.is-scrolled { background: rgba(5, 7, 13, .72); border-color: rgba(255, 255, 255, .12); }
+    .hero {
+      min-height: 840px;
+      padding-top: 150px;
+      background: #070a11;
+    }
+    .hero::before { right: 50%; background: rgba(255, 255, 255, .07); }
+    .hero::after { right: 7%; bottom: 10%; width: 260px; background: var(--orange); opacity: .5; }
+    .hero-grid { grid-template-columns: .82fr 1.18fr; gap: 48px; }
+    .hero-copy {
+      padding: 37px 38px 35px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 22px;
+      background: rgba(12, 17, 28, .7);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, .32), inset 0 1px 0 rgba(255, 255, 255, .08);
+      backdrop-filter: blur(22px);
+    }
+    .hero h1 { font-size: clamp(46px, 5.4vw, 76px); letter-spacing: -.07em; }
+    .hero h1 span { color: var(--orange-soft); }
+    .hero-image-card {
+      position: relative;
+      aspect-ratio: 1.48 / 1;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 25px;
+      background: #101a26;
+      box-shadow: 0 36px 95px rgba(0, 0, 0, .42), 0 0 0 8px rgba(255, 255, 255, .025);
+    }
+    .hero-image-card img { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(.92) contrast(1.05); }
+    .hero-image-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4, 8, 16, .12), rgba(4, 8, 16, .08) 47%, rgba(4, 8, 16, .78)); }
+    .hero-image-top, .hero-image-bottom { position: absolute; left: 22px; right: 22px; display: flex; align-items: center; justify-content: space-between; gap: 15px; color: #f5f4ed; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
+    .hero-image-top { top: 19px; }
+    .hero-image-bottom { bottom: 20px; display: block; letter-spacing: 0; text-transform: none; }
+    .hero-image-bottom b { display: block; font-family: var(--serif); font-size: clamp(17px, 2.1vw, 27px); }
+    .hero-image-bottom span { display: block; margin-top: 4px; color: rgba(255, 255, 255, .72); font-size: 11px; }
+    .hero-live { display: inline-flex; align-items: center; gap: 7px; color: var(--mint); }
+    .hero-live i { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 4px rgba(148, 226, 193, .14); }
+    .hero-glass-chip { position: absolute; right: 19px; bottom: 24%; display: grid; gap: 3px; min-width: 145px; padding: 12px 14px; border: 1px solid rgba(255, 255, 255, .28); border-radius: 12px; color: #fff; background: rgba(9, 14, 23, .48); box-shadow: 0 10px 30px rgba(0, 0, 0, .22); backdrop-filter: blur(16px); }
+    .hero-glass-chip strong { font-size: 12px; }
+    .hero-glass-chip span { color: rgba(255, 255, 255, .66); font-size: 10px; }
+    .hero-visual .studio-window { display: none; }
+    .signal-strip { background: rgba(11, 17, 28, .82); backdrop-filter: blur(16px); }
+    .signal-item { border-color: rgba(255, 255, 255, .1); }
+    .signal-item b { font-family: var(--sans); font-size: 21px; letter-spacing: -.03em; }
+    .section-title { letter-spacing: -.055em; }
+    .paper-section, .proof-section, .audience-section { color: var(--text); background: #080d16; }
+    .paper-section .section-title, .proof-section .section-title, .audience-section .section-title { color: var(--text); }
+    .paper-section .section-copy, .proof-section .section-copy, .audience-section .section-copy { color: var(--muted); }
+    .paper-section .eyebrow, .proof-section .eyebrow, .audience-section .eyebrow { color: var(--orange); }
+    .pain-card, .audience-card, .proof-panel {
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 17px;
+      background: rgba(16, 25, 40, .68);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 14px 40px rgba(0, 0, 0, .12);
+      backdrop-filter: blur(16px);
+    }
+    .pain-card:nth-child(2), .pain-card:nth-child(3), .audience-card:nth-child(2), .audience-card:nth-child(3), .audience-card:nth-child(4) { background: rgba(16, 25, 40, .68); }
+    .pain-index, .audience-card span { color: rgba(255, 255, 255, .35); }
+    .pain-card h3, .audience-card h3 { color: var(--text); }
+    .pain-card p, .audience-card p { color: var(--muted); }
+    .pain-result { color: var(--orange-soft); }
+    .proof-panel-head { border-color: rgba(255, 255, 255, .11); color: var(--muted); }
+    .proof-panel-head b { color: var(--text); }
+    .proof-copy { color: #dfe4ec; }
+    .proof-copy mark { color: #24170e; background: var(--orange-soft); }
+    .proof-json { color: #c4d8e4; background: rgba(10, 20, 31, .82); }
+    .proof-json .k { color: var(--orange-soft); }
+    .proof-json .s { color: var(--mint); }
+    .proof-json .n { color: var(--blue); }
+    .proof-tag { border-color: rgba(148, 226, 193, .28); color: var(--mint); }
+    .showcase-section { background: #050a12; }
+    .showcase-head { display: flex; align-items: end; justify-content: space-between; gap: 40px; }
+    .showcase-head .section-copy { max-width: 430px; margin-bottom: 8px; }
+    .showcase-grid { display: grid; grid-template-columns: 1.28fr .72fr; gap: 16px; margin-top: 55px; }
+    .showcase-feature, .showcase-card { position: relative; overflow: hidden; margin: 0; border: 1px solid rgba(255, 255, 255, .17); border-radius: 19px; background: #0d141f; box-shadow: 0 22px 55px rgba(0, 0, 0, .28); }
+    .showcase-feature { min-height: 405px; }
+    .showcase-side { display: grid; gap: 16px; }
+    .showcase-card { min-height: 194px; }
+    .showcase-feature img, .showcase-card img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; transition: transform .45s ease; }
+    .showcase-feature img { position: absolute; inset: 0; }
+    .showcase-card img { height: 100%; min-height: 194px; }
+    .showcase-feature:hover img, .showcase-card:hover img { transform: scale(1.035); }
+    .showcase-feature::after, .showcase-card::after { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 48%, rgba(3, 6, 12, .85)); content: ""; pointer-events: none; }
+    .showcase-feature figcaption, .showcase-card figcaption { position: absolute; z-index: 1; right: 19px; bottom: 16px; left: 19px; display: flex; align-items: end; justify-content: space-between; gap: 15px; color: #fff; }
+    .showcase-feature figcaption b, .showcase-card figcaption b { font-family: var(--serif); font-size: 19px; }
+    .showcase-feature figcaption span, .showcase-card figcaption span { color: rgba(255, 255, 255, .68); font-size: 10px; text-align: right; }
+    .capacity-section { background: #0a101a; }
+    .capacity-card { border-radius: 18px; background: rgba(15, 26, 40, .78); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 22px 55px rgba(0, 0, 0, .22); backdrop-filter: blur(17px); }
+    .feature-card { border-radius: 17px; background: rgba(13, 22, 35, .72); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04); backdrop-filter: blur(14px); }
+    .closing { border-top: 1px solid rgba(255, 255, 255, .12); background: #080d16; color: var(--text); }
+    .closing::before, .closing::after { background: rgba(255, 255, 255, .1); }
+    .closing h2 { color: var(--text); }
+    .closing p { color: var(--muted); }
+    .closing .button-primary { color: #231508; background: var(--orange); }
+    .closing .button-primary:hover { background: #ffd06d; }
+
+    @media (max-width: 980px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-copy { max-width: 690px; }
+      .hero-image-card { max-width: 760px; }
+      .showcase-head { display: block; }
+      .showcase-head .section-copy { margin-top: 20px; }
+    }
+    @media (max-width: 720px) {
+      .hero { padding-top: 112px; }
+      .hero-copy { padding: 27px 22px 25px; border-radius: 17px; }
+      .hero-image-card { aspect-ratio: 1.22 / 1; border-radius: 17px; }
+      .hero-image-top { left: 15px; right: 15px; font-size: 8px; }
+      .hero-image-bottom { left: 15px; right: 15px; bottom: 15px; }
+      .hero-glass-chip { right: 12px; bottom: 26%; min-width: 125px; padding: 9px 10px; }
+      .showcase-grid { grid-template-columns: 1fr; margin-top: 35px; }
+      .showcase-feature { min-height: 230px; }
+      .showcase-card { min-height: 185px; }
+      .showcase-card img { min-height: 185px; }
+      .showcase-feature figcaption, .showcase-card figcaption { display: block; }
+      .showcase-feature figcaption span, .showcase-card figcaption span { display: block; margin-top: 3px; text-align: left; }
+    }
+    /* REA-derived clean-room visual pass: warm editorial product page */
+    :root {
+      --ink: #0b0906;
+      --ink-2: #100c07;
+      --ink-3: #171109;
+      --text: #ede3cd;
+      --cream: #ede3cd;
+      --muted: #a3967c;
+      --line: rgba(217, 180, 92, .22);
+      --line-soft: rgba(217, 180, 92, .12);
+      --orange: #d9b45c;
+      --orange-soft: #f4e2a0;
+      --gold: #d9b45c;
+      --gold-deep: #8d6a27;
+      --panel: #151008;
+      --panel2: #21170a;
+      --mint: #7ed957;
+      --blue: #9cc4df;
+      --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
+      --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    body { background: var(--ink); color: var(--text); }
+    .container { width: min(1144px, calc(100% - 56px)); }
+    .site-nav { background: transparent; }
+    .site-nav.is-scrolled { background: rgba(11, 9, 6, .9); border-color: var(--line); }
+    .nav-inner { min-height: 74px; }
+    .brand-mark { border-color: rgba(217, 180, 92, .62); color: var(--orange-soft); border-radius: 9px; }
+    .brand-word { font-family: var(--serif); }
+    .nav-links { gap: 31px; color: var(--muted); }
+    .nav-links a:hover { color: var(--orange-soft); }
+    .button { border-radius: 2px; letter-spacing: .08em; }
+    .button-primary { color: #1a1305; background: linear-gradient(135deg, #f4e2a0, #d9b45c 52%, #b8902f); box-shadow: 0 12px 30px -12px rgba(217, 180, 92, .7); }
+    .button-primary:hover { background: linear-gradient(135deg, #fff1be, #e4bf68 52%, #c49c38); }
+    .button-quiet { border-color: var(--line); background: rgba(217, 180, 92, .035); }
+    .hero { min-height: 820px; padding: 164px 0 80px; background: radial-gradient(ellipse at 18% 30%, rgba(217, 180, 92, .09), transparent 34%), var(--ink); }
+    .hero::before { right: 50%; background: rgba(217, 180, 92, .11); }
+    .hero::after { right: 4%; bottom: 8%; width: 210px; background: var(--gold); opacity: .45; }
+    .hero-grid { grid-template-columns: 1.1fr 1fr; gap: 50px; }
+    .hero-copy { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+    .eyebrow { color: var(--orange); letter-spacing: .21em; }
+    .hero h1 { max-width: 610px; margin: 42px 0 26px; font-size: clamp(45px, 4.6vw, 70px); line-height: 1.12; letter-spacing: .015em; }
+    .hero h1 span { color: var(--orange-soft); white-space: nowrap; background: linear-gradient(180deg, #f8ecc2, #d9b45c); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero h1 span::after { background: rgba(217, 180, 92, .18); }
+    .hero-lead { max-width: 550px; color: var(--muted); font-size: 16px; line-height: 1.9; }
+    .hero-actions { margin-bottom: 37px; }
+    .hero-notes { color: var(--muted); }
+    .hero-note::before { background: #7ed957; box-shadow: 0 0 10px #7ed957; }
+    .hero-visual { min-width: 0; padding-top: 130px; }
+    .hero-image-card { aspect-ratio: 1.53 / 1; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 36px 90px -30px rgba(0, 0, 0, .95), 0 0 0 1px rgba(0, 0, 0, .7); }
+    .hero-image-card img { object-position: 36% center; filter: saturate(.86) contrast(1.06); }
+    .hero-image-overlay { background: linear-gradient(180deg, rgba(11, 9, 6, .03), rgba(11, 9, 6, .08) 50%, rgba(11, 9, 6, .82)); }
+    .hero-image-top { color: var(--orange-soft); font-size: 9px; }
+    .hero-image-bottom b { font-family: var(--serif); font-size: 23px; }
+    .hero-image-bottom span { color: var(--muted); }
+    .hero-glass-chip { border-color: var(--line); border-radius: 3px; background: rgba(217, 180, 92, .9); color: #1a1305; box-shadow: 0 10px 30px -8px rgba(217, 180, 92, .8); backdrop-filter: none; }
+    .hero-glass-chip span { color: #5e4719; }
+    .signal-strip { background: var(--ink-2); border-color: var(--line); }
+    .signal-item { min-height: 113px; padding: 25px 21px; border-color: var(--line-soft); }
+    .signal-item b { font-family: var(--serif); color: var(--orange-soft); font-size: 28px; }
+    .signal-item span { color: var(--muted); }
+    .section { padding: 105px 0; }
+    .section-title { font-family: var(--serif); color: var(--cream); font-size: clamp(32px, 4vw, 48px); letter-spacing: .01em; }
+    .section-title em { color: var(--orange-soft); background: linear-gradient(180deg, #f8ecc2, #d9b45c); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .paper-section, .proof-section, .audience-section { background: var(--ink); color: var(--text); }
+    .paper-section .section-title, .proof-section .section-title, .audience-section .section-title { color: var(--cream); }
+    .paper-section .section-copy, .proof-section .section-copy, .audience-section .section-copy { color: var(--muted); }
+    .paper-section .eyebrow, .proof-section .eyebrow, .audience-section .eyebrow { color: var(--orange); }
+    .pain-grid { gap: 14px; margin-top: 52px; }
+    .pain-card, .audience-card, .proof-panel, .feature-card, .capacity-card { min-height: 0; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); box-shadow: 0 18px 60px -36px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .035); backdrop-filter: none; }
+    .pain-card:nth-child(2), .pain-card:nth-child(3), .audience-card:nth-child(2), .audience-card:nth-child(3), .audience-card:nth-child(4) { background: var(--panel); }
+    .pain-card { min-height: 250px; padding: 27px; }
+    .pain-index, .audience-card span { color: rgba(217, 180, 92, .42); }
+    .pain-card h3, .audience-card h3 { color: var(--cream); font-family: var(--serif); }
+    .pain-card p, .audience-card p { color: var(--muted); }
+    .pain-result { color: var(--orange-soft); }
+    .workflow-section, .capacity-section { background: var(--ink-2); }
+    .workflow-stage, .stage-note, .stage-output, .capacity-card { border-color: var(--line); border-radius: 7px; background: var(--panel); }
+    .workflow-step { border-color: var(--line-soft); }
+    .workflow-step.is-active { color: var(--orange-soft); }
+    .stage-top h3 { font-family: var(--serif); }
+    .stage-bar { background: var(--panel2); border-color: var(--gold-deep); }
+    .stage-bar:nth-child(2) { border-color: #718c43; }
+    .stage-bar:nth-child(3) { border-color: #587c96; }
+    .proof-panel-head { border-color: var(--line); }
+    .proof-copy { background: var(--panel); color: var(--cream); }
+    .proof-json { background: #0d120f; color: #d5ddc4; }
+    .proof-tag { border-color: rgba(217, 180, 92, .27); color: var(--orange-soft); }
+    .showcase-section { background: var(--ink); }
+    .showcase-feature, .showcase-card { border-color: var(--line); border-radius: 8px; background: var(--panel); box-shadow: 0 25px 70px -38px rgba(0, 0, 0, .95); }
+    .showcase-feature::after, .showcase-card::after { background: linear-gradient(180deg, transparent 43%, rgba(11, 9, 6, .92)); }
+    .showcase-feature figcaption b, .showcase-card figcaption b { font-family: var(--serif); color: var(--cream); }
+    .showcase-feature figcaption span, .showcase-card figcaption span { color: var(--muted); }
+    .capacity-number { color: var(--orange-soft); font-family: var(--serif); }
+    .feature-card { min-height: 215px; }
+    .feature-card:hover { border-color: rgba(217, 180, 92, .62); }
+    .feature-icon { border-color: rgba(217, 180, 92, .62); color: var(--orange); }
+    .feature-card h3 { color: var(--cream); font-family: var(--serif); }
+    .closing { padding: 110px 0 125px; background: var(--ink); color: var(--cream); }
+    .closing h2 { font-family: var(--serif); color: var(--cream); }
+    .closing p { color: var(--muted); }
+    .closing .button-primary { color: #1a1305; background: linear-gradient(135deg, #f4e2a0, #d9b45c); }
+    footer { background: #080604; border-top: 1px solid var(--line-soft); }
+    .modal { border-color: var(--line); border-radius: 6px; background: var(--panel); }
+    .marquee-strip { overflow: hidden; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); background: var(--ink-2); color: var(--orange-soft); }
+    .marquee-track { display: flex; width: max-content; gap: 34px; padding: 15px 0; animation: marquee 28s linear infinite; font-size: 11px; letter-spacing: .14em; }
+    .marquee-track span::after { content: "✦"; margin-left: 34px; color: var(--gold-deep); }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-35%); } }
+    @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; } .hero-copy { max-width: 650px; } .hero-visual { padding-top: 0; } .hero-image-card { max-width: 740px; } }
+    @media (max-width: 720px) { .container { width: min(100% - 32px, 560px); } .hero { padding-top: 112px; } .hero h1 { margin-top: 28px; font-size: clamp(39px, 10.8vw, 58px); } .hero h1 span { white-space: normal; } .hero-visual { padding-top: 0; } .hero-image-card { aspect-ratio: 1.15 / 1; } .hero-image-bottom b { font-size: 18px; } .signal-item b { font-size: 24px; } }
+  </style>
+</head>
+<body>
+  <header class="site-nav" id="siteNav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="念一动漫首页">
+        <span class="brand-mark">NY</span>
+        <span class="brand-word">念一动漫<small>NIAN YI ANIMATION</small></span>
+      </a>
+      <nav class="nav-links" aria-label="页面导航">
+        <a href="#pain">痛点</a>
+        <a href="#workflow">6步成片</a>
+        <a href="#features">核心能力</a>
+        <a href="#capacity">成本</a>
+        <a href="#showcase">界面展示</a>
+        <a href="#faq">常见问题</a>
+      </nav>
+      <button class="button button-primary nav-cta js-open-modal">预约演示 <span aria-hidden="true">↗</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">NIANYI ANIMATION · WINDOWS WORKSPACE</div>
+          <h1>一个人，一台电脑<br><span>也能做出一集漫剧。</span></h1>
+          <p class="hero-lead">念一动漫把小说文案、专业剧本、JSON 分镜、角色资产、生图、生视频、配音和剪映草稿，收进一条真正能跟着做的创作流水线。</p>
+          <div class="hero-actions">
+            <button class="button button-primary button-arrow js-open-modal">预约演示</button>
+            <a class="button button-quiet" href="#workflow">看 6 步成片流程 <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-notes">
+            <span class="hero-note">按账号额度排队生成</span>
+            <span class="hero-note">全程中文提示词</span>
+            <span class="hero-note">一键衔接剪映</span>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal">
+          <div class="hero-image-card" aria-label="念一动漫品牌视觉展示">
+            <img src="assets/studio-storyboard.png" alt="念一动漫分镜工作台软件界面">
+            <div class="hero-image-overlay"></div>
+            <div class="hero-image-top"><span>NIANYI / VISUAL ENGINE</span><span class="hero-live"><i></i> LIVE WORKSPACE</span></div>
+            <div class="hero-image-bottom"><b>从剧本到成片，一套系统全部完成</b><span>角色 · 场景 · 分镜 · 视频 · 音频</span></div>
+            <div class="hero-glass-chip"><strong>AI 创作链路</strong><span>已连接 06 个模块</span></div>
+          </div>
+          <div class="studio-window" aria-label="念一动漫创作台界面演示">
+            <div class="window-top">
+              <span class="window-title"><i></i> 念一动漫 · 创作台</span>
+              <span class="window-dots"><i></i><i></i><i></i></span>
+            </div>
+            <div class="window-body">
+              <aside class="studio-side">
+                <div class="side-label">workspace</div>
+                <button class="studio-tab is-active" data-studio-tab="script"><b>01</b><span>剧本</span></button>
+                <button class="studio-tab" data-studio-tab="storyboard"><b>02</b><span>分镜</span></button>
+                <button class="studio-tab" data-studio-tab="assets"><b>03</b><span>资产</span></button>
+                <button class="studio-tab" data-studio-tab="export"><b>04</b><span>剪映</span></button>
+              </aside>
+              <div class="studio-main">
+                <div class="studio-toolbar">
+                  <div><h3 id="studioHeading">第 01 集 · 剧本提炼</h3><p id="studioSubheading">把一段小说，变成可执行的镜头语言</p></div>
+                  <span class="status-chip">● 已就绪</span>
+                </div>
+                <div class="studio-panel is-active" data-studio-panel="script">
+                  <div class="prompt-box"><span class="prompt-label">story input</span><div class="prompt-text">“暴雨夜，沈昭在旧车站捡到一枚发光的玉佩……”<br><strong>正在提炼人物目标、冲突和情绪转折</strong></div></div>
+                  <div class="panel-row"><div class="mini-card"><small>剧情结构</small><b>三幕式 · 01 / 06</b><span>已生成</span></div><div class="mini-card"><small>提示词模板</small><b>古风悬疑 · 12 条</b><span>可直接套用</span></div></div>
+                </div>
+                <div class="studio-panel" data-studio-panel="storyboard">
+                  <div class="json-box"><span class="json-key">"shot_id"</span>: <span class="json-value">"S01_03"</span>,<br><span class="json-key">"camera"</span>: <span class="json-value">"slow_push_in"</span>,<br><span class="json-key">"character"</span>: <span class="json-value">["沈昭", "神秘旅人"]</span>,<br><span class="json-key">"scene"</span>: <span class="json-value">"雨夜旧车站"</span>,<br><span class="json-key">"props"</span>: <span class="json-value">["发光玉佩", "旧行李箱"]</span>,<br><span class="json-key">"duration"</span>: <span class="json-value">"05s"</span></div>
+                </div>
+                <div class="studio-panel" data-studio-panel="assets">
+                  <div class="asset-row"><div class="asset"><div class="asset-visual"></div><b>雨夜车站 · 场景</b></div><div class="asset"><div class="asset-visual"></div><b>沈昭 · 角色</b></div><div class="asset"><div class="asset-visual"></div><b>发光玉佩 · 道具</b></div></div>
+                  <div class="panel-row"><div class="mini-card"><small>一致性检查</small><b>8 / 8 镜头通过</b><span>可继续生图</span></div><div class="mini-card"><small>生成队列</small><b>第 02 个账号</b><span>预计 00:34</span></div></div>
+                </div>
+                <div class="studio-panel" data-studio-panel="export">
+                  <div class="timeline"><div class="timeline-card"><b>01 · 夜站</b><span>00:00 — 00:05</span></div><div class="timeline-card"><b>02 · 玉佩</b><span>00:05 — 00:10</span></div><div class="timeline-card"><b>03 · 回头</b><span>00:10 — 00:15</span></div></div>
+                  <div class="panel-row"><div class="mini-card"><small>视频片段</small><b>3 / 3 已完成</b><span>可导入剪映草稿</span></div><div class="mini-card"><small>音频轨道</small><b>旁白 + 音效</b><span>已自动对齐</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="signal-strip" aria-label="产品概览数据">
+      <div class="container signal-grid">
+        <div class="signal-item reveal"><b><i>3</i> × 15s</b><span>单个豆包账号的每日视频额度示例</span></div>
+        <div class="signal-item reveal"><b><i>JSON</i> 分镜</b><span>人物、场景、道具一起结构化</span></div>
+        <div class="signal-item reveal"><b><i>6</i> 步闭环</b><span>从文案到草稿，减少来回搬运</span></div>
+        <div class="signal-item reveal"><b><i>多</i> 模型</b><span>对话、生图、生视频、生音频统一接入</span></div>
+      </div>
+    </section>
+
+    <div class="marquee-strip" aria-label="念一动漫创作流程">
+      <div class="marquee-track" aria-hidden="true">
+        <span>小说文案</span><span>专业剧本</span><span>JSON 分镜</span><span>角色资产</span><span>场景资产</span><span>自动生图</span><span>视频生成</span><span>剪映草稿</span>
+        <span>小说文案</span><span>专业剧本</span><span>JSON 分镜</span><span>角色资产</span><span>场景资产</span><span>自动生图</span><span>视频生成</span><span>剪映草稿</span>
+      </div>
+    </div>
+
+    <section class="section paper-section" id="pain">
+      <div class="container">
+        <div class="eyebrow reveal">WHY IT MATTERS</div>
+        <h2 class="section-title reveal">做漫剧，难的从来不只是<br><em>按下生成。</em></h2>
+        <p class="section-copy reveal">真正耗时间的是：不知道写什么提示词、每个镜头长得不一样、在一堆工具之间反复导出。念一动漫把这些断点放进同一条工作流。</p>
+        <div class="pain-grid">
+          <article class="pain-card reveal"><div class="pain-index">01</div><h3>算力一贵，就不敢试错</h3><p>漫剧要反复改镜头。先用已有账号额度排队生成，再按需要接入价格友好的模型 API。</p><div class="pain-result">把预算留给真正重要的镜头</div></article>
+          <article class="pain-card reveal"><div class="pain-index">02</div><h3>有故事，却写不出提示词</h3><p>直接复制小说文案，先变成 AI 能理解的剧本，再提炼成带角色、场景、道具的 JSON 分镜。</p><div class="pain-result">从“不会写”到“照着做”</div></article>
+          <article class="pain-card reveal"><div class="pain-index">03</div><h3>软件太多，流程总是断</h3><p>创作台接住资产和镜头，生成结果直接整理进剪映草稿，少一次下载、上传和命名。</p><div class="pain-result">把时间用在审片和发布</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section workflow-section" id="workflow">
+      <div class="container">
+        <div class="workflow-head">
+          <div><div class="eyebrow reveal">ONE FLOW · SIX STEPS</div><h2 class="section-title reveal">从一段文案，<br><em>走到一条成片。</em></h2></div>
+          <p class="section-copy reveal">每一步都有可检查的中间结果，流程不靠猜。点击左侧步骤，看看创作台实际交付什么。</p>
+        </div>
+        <div class="workflow-layout">
+          <div class="workflow-list reveal">
+            <button class="workflow-step is-active" data-step="0"><span class="step-no">01</span><span class="step-name">复制小说文案</span><span class="step-arrow">↗</span></button>
+            <button class="workflow-step" data-step="1"><span class="step-no">02</span><span class="step-name">生成专业剧本</span><span class="step-arrow">↗</span></button>
+            <button class="workflow-step" data-step="2"><span class="step-no">03</span><span class="step-name">提炼 JSON 分镜</span><span class="step-arrow">↗</span></button>
+            <button class="workflow-step" data-step="3"><span class="step-no">04</span><span class="step-name">提取人物 / 场景 / 道具</span><span class="step-arrow">↗</span></button>
+            <button class="workflow-step" data-step="4"><span class="step-no">05</span><span class="step-name">自动生图，再生视频</span><span class="step-arrow">↗</span></button>
+            <button class="workflow-step" data-step="5"><span class="step-no">06</span><span class="step-name">整理进剪映草稿</span><span class="step-arrow">↗</span></button>
+          </div>
+          <div class="workflow-stage reveal" aria-live="polite">
+            <div class="stage-top"><div class="stage-no" id="stageNo">01</div><div><h3 id="stageTitle">先把故事交给创作台</h3><p id="stageDescription">不需要先学提示词。粘贴你已有的小说片段，念一动漫会先读懂人物关系和这一集的冲突。</p></div></div>
+            <div class="stage-content"><div class="stage-note"><div class="stage-note-label" id="stageNoteLabel">input · 原始文案</div><p id="stageNote">“沈昭走进废弃车站。雨声盖过了广播，月台尽头有一盏灯，像是在等她。”</p></div><div class="stage-output"><div class="stage-output-top"><span id="stageOutputLabel">创作台识别</span><b id="stageOutputStatus">已读取</b></div><div class="stage-bars" id="stageBars"><div class="stage-bar">人物 · 沈昭</div><div class="stage-bar">场景 · 废弃车站</div><div class="stage-bar">情绪 · 不安 / 试探</div></div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section proof-section" id="demo">
+      <div class="container">
+        <div class="eyebrow reveal">SEE THE HANDOFF</div>
+        <h2 class="section-title reveal">不是“帮你写一段”，<br><em>是把下一步也准备好。</em></h2>
+        <p class="section-copy reveal">剧本会继续被整理成可下载、可导入创作台的结构化分镜。人物、场景、道具被单独提取，后面换镜头也能复用。</p>
+        <div class="proof-grid">
+          <div class="proof-panel reveal"><div class="proof-panel-head"><b>原始文案</b><span>复制 · 粘贴</span></div><div class="proof-copy">她在车站醒来，手里多了一枚发光的玉佩。远处传来脚步声，她不敢回头，却听见有人叫出她的名字。<br><br><mark>“沈昭。”</mark></div></div>
+          <div class="proof-panel reveal"><div class="proof-panel-head"><b>JSON 分镜</b><span>下载 · 导入创作台</span></div><div class="proof-json">{<br>&nbsp; <span class="k">"shot_id"</span>: <span class="s">"S01_03"</span>,<br>&nbsp; <span class="k">"characters"</span>: [<span class="s">"沈昭"</span>],<br>&nbsp; <span class="k">"scene"</span>: <span class="s">"雨夜旧车站"</span>,<br>&nbsp; <span class="k">"props"</span>: [<span class="s">"发光玉佩"</span>],<br>&nbsp; <span class="k">"camera"</span>: <span class="s">"slow_push_in"</span>,<br>&nbsp; <span class="k">"duration"</span>: <span class="n">5</span><br>}</div><div class="proof-foot"><span class="proof-tag">人物资产 01</span><span class="proof-tag">场景资产 01</span><span class="proof-tag">道具资产 01</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section showcase-section" id="showcase">
+      <div class="container">
+        <div class="showcase-head">
+          <div><div class="eyebrow reveal">INSIDE NIANYI</div><h2 class="section-title reveal">你看到的不是概念图，<br><em>是正在工作的创作台。</em></h2></div>
+          <p class="section-copy reveal">从小说创作、分镜生成到风格库和资产管理，真实界面一眼看懂。直播间里不需要解释半天，直接给观众看结果。</p>
+        </div>
+        <div class="showcase-grid">
+          <figure class="showcase-feature reveal"><img src="assets/studio-novel.png" alt="念一动漫小说创作界面截图"><figcaption><b>小说创作</b><span>把长篇创作拆成可持续的节点</span></figcaption></figure>
+          <div class="showcase-side">
+            <figure class="showcase-card reveal"><img src="assets/studio-storyboard.png" alt="念一动漫分镜生成界面截图"><figcaption><b>分镜工作台</b><span>台词、角色、场景、道具集中管理</span></figcaption></figure>
+            <figure class="showcase-card reveal"><img src="assets/style-library.png" alt="念一动漫风格库界面截图"><figcaption><b>风格库</b><span>63 项风格资产，快速切换视觉方向</span></figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section capacity-section" id="capacity">
+      <div class="container capacity-grid">
+        <div><div class="eyebrow reveal">CAPACITY, MADE VISIBLE</div><h2 class="section-title reveal">多个账号，<br><em>把等待变成队列。</em></h2><p class="section-copy reveal">按你实际拥有的豆包账号数量估算每天的示例产能。念一动漫负责排队、记录和切换，具体额度以平台当日规则为准。</p></div>
+        <div class="capacity-card reveal"><div class="capacity-top"><span>豆包账号数量</span><div class="capacity-number"><span id="accountValue">4</span><small>个账号</small></div></div><input id="accountRange" type="range" min="1" max="20" value="4" aria-label="豆包账号数量"><div class="range-labels"><span>1 个</span><span>20 个</span></div><div class="capacity-result"><div class="capacity-stat"><b id="clipValue">12</b><span>条 15 秒视频 / 日（示例）</span></div><div class="capacity-stat"><b id="secondsValue">180</b><span>秒视频时长 / 日（示例）</span></div></div><p class="capacity-foot"><strong>● 账号队列可视化</strong>　失败任务可重试，模型 API 也能接进同一工作区。</p></div>
+      </div>
+    </section>
+
+    <section class="section features-section" id="features">
+      <div class="container"><div class="eyebrow reveal">BUILT FOR THE WHOLE EPISODE</div><h2 class="section-title reveal">你真正需要的，<br><em>是一条完整的生产线。</em></h2><p class="section-copy reveal">工具不替你决定故事，但把每个重复、容易出错、需要来回搬运的环节先整理好。</p>
+        <div class="feature-grid">
+          <article class="feature-card reveal"><div class="feature-icon">01</div><h3>提示词模板库</h3><p>把小说语言翻成模型能执行的镜头语言，覆盖画风、运镜、节奏和角色描述。</p></article>
+          <article class="feature-card reveal"><div class="feature-icon">02</div><h3>多账号生成队列</h3><p>登录多个豆包账号，统一查看额度、任务状态和失败重试，减少手动切换。</p></article>
+          <article class="feature-card reveal"><div class="feature-icon">03</div><h3>角色与场景资产</h3><p>从 JSON 分镜自动提取人物、场景、道具，先审图再进入视频生成。</p></article>
+          <article class="feature-card reveal"><div class="feature-icon">04</div><h3>模型自由接入</h3><p>对话、生图、生视频、生音频模型放在一处，也支持接入你已有的中转 API。</p></article>
+          <article class="feature-card reveal"><div class="feature-icon">05</div><h3>镜头质量检查</h3><p>生成后集中看角色一致性、画面状态和镜头衔接，减少返工和盲目重跑。</p></article>
+          <article class="feature-card reveal"><div class="feature-icon">06</div><h3>剪映草稿衔接</h3><p>视频片段、旁白和音效按镜头整理，直接进入剪映继续剪辑和发布。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section audience-section">
+      <div class="container"><div class="eyebrow reveal">WHO IS IT FOR</div><h2 class="section-title reveal">不管你从哪里开始，<br><em>都能先做出第一集。</em></h2><p class="section-copy reveal">念一动漫适合把故事做成内容的人，也适合想把流程变成服务的人。</p>
+        <div class="audience-grid"><article class="audience-card reveal"><span>01</span><h3>网文作者</h3><p>把已有世界观和章节快速变成漫剧试播集。</p></article><article class="audience-card reveal"><span>02</span><h3>漫剧工作室</h3><p>统一角色、场景、提示词和镜头交付格式。</p></article><article class="audience-card reveal"><span>03</span><h3>短视频代运营</h3><p>给商家和 IP 做剧情化内容，缩短制作周期。</p></article><article class="audience-card reveal"><span>04</span><h3>想接单的人</h3><p>先用一条完整案例，验证自己的内容服务。</p></article></div>
+      </div>
+    </section>
+
+    <section class="section faq-section" id="faq"><div class="container faq-wrap"><div class="eyebrow reveal">FAQ</div><h2 class="section-title reveal">先把顾虑，<br><em>问清楚。</em></h2><div class="faq-list reveal">
+      <div class="faq-item"><button class="faq-question">需要高端显卡或复杂安装吗？</button><div class="faq-answer"><p>页面展示的是工作流产品介绍。实际部署方式、系统要求和模型配置建议，可以在演示时根据你的设备和账号情况确认。</p></div></div>
+      <div class="faq-item"><button class="faq-question">豆包账号每天能生成多少？</button><div class="faq-answer"><p>页面按你提供的示例展示为“单账号每天 3 条 15 秒视频”。平台额度可能调整，实际以豆包账号当日可用额度为准，工具负责多账号排队和状态管理。</p></div></div>
+      <div class="faq-item"><button class="faq-question">不会写提示词，也能开始吗？</button><div class="faq-answer"><p>可以。先粘贴小说文案，工具会生成剧本和结构化分镜；你可以在生成结果上继续修改，不需要从空白提示词开始。</p></div></div>
+      <div class="faq-item"><button class="faq-question">模型 API 需要另外购买吗？</button><div class="faq-answer"><p>如果使用外部模型或中转站 API，费用和服务条款由对应平台决定。念一动漫提供统一接入位置，方便你按需要选择模型。</p></div></div>
+      <div class="faq-item"><button class="faq-question">生成后能直接发布吗？</button><div class="faq-answer"><p>工具可以把视频片段和音频整理到剪映草稿，最终仍建议你在剪映里完成审片、字幕、封面和发布设置。</p></div></div>
+    </div></div></section>
+
+    <section class="closing"><div class="container"><h2 class="reveal">先把第一集做出来，<br>再谈你的漫剧计划。</h2><p class="reveal">预约一次演示，看看念一动漫怎样把一段小说文案，变成可以继续剪、继续发布的镜头。</p><button class="button button-primary button-arrow js-open-modal reveal">预约演示</button><div class="closing-note reveal">一次看懂流程 · 按实际账号和模型情况沟通</div></div></section>
+  </main>
+
+  <footer><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark">NY</span><span class="brand-word">念一动漫<small>NIAN YI ANIMATION</small></span></a><span>把故事交给创作台，把时间留给成片。</span></div></footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal"><button class="modal-close" id="modalClose" aria-label="关闭">×</button><h2 id="modalTitle">预约念一动漫演示</h2><p class="modal-lead">留下一个方便联系的方式，后续把演示入口和配置建议发给你。</p><form id="demoForm"><div class="form-row"><label for="nameInput">怎么称呼你</label><input id="nameInput" name="name" placeholder="例如：小林" required></div><div class="form-row"><label for="contactInput">微信 / 手机号</label><input id="contactInput" name="contact" placeholder="方便联系的方式" required></div><button class="button button-primary" type="submit">提交预约 <span aria-hidden="true">↗</span></button><p class="form-note">当前页面未连接后端，提交后会显示本地确认状态。将页面用于直播间前，可在脚本底部接入你的表单或二维码。</p></form><div class="success-message" id="successMessage">已收到预约信息。请把这里替换成你的客服微信或真实表单提交地址。</div></div>
+  </div>
+
+  <script>
+    const nav = document.getElementById('siteNav');
+    window.addEventListener('scroll', () => nav.classList.toggle('is-scrolled', window.scrollY > 16), { passive: true });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: .13 });
+    document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+
+    const studioCopy = {
+      script: ['第 01 集 · 剧本提炼', '把一段小说，变成可执行的镜头语言'],
+      storyboard: ['第 01 集 · JSON 分镜', '人物、场景、道具一起交给创作台'],
+      assets: ['第 01 集 · 资产库', '先检查一致性，再进入视频生成'],
+      export: ['第 01 集 · 剪映草稿', '片段、旁白和音效按镜头排好']
+    };
+    document.querySelectorAll('[data-studio-tab]').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const key = tab.dataset.studioTab;
+        document.querySelectorAll('[data-studio-tab]').forEach((item) => item.classList.toggle('is-active', item === tab));
+        document.querySelectorAll('[data-studio-panel]').forEach((panel) => panel.classList.toggle('is-active', panel.dataset.studioPanel === key));
+        document.getElementById('studioHeading').textContent = studioCopy[key][0];
+        document.getElementById('studioSubheading').textContent = studioCopy[key][1];
+      });
+    });
+
+    const workflowData = [
+      ['01', '先把故事交给创作台', '不需要先学提示词。粘贴你已有的小说片段，念一动漫会先读懂人物关系和这一集的冲突。', 'input · 原始文案', '“沈昭走进废弃车站。雨声盖过了广播，月台尽头有一盏灯，像是在等她。”', '创作台识别', '已读取', ['人物 · 沈昭', '场景 · 废弃车站', '情绪 · 不安 / 试探']],
+      ['02', '把故事变成可以拍的剧本', '结构、节奏和人物目标被整理出来，后续每个镜头都有明确任务。', 'output · 专业剧本', '场次：夜 / 外 / 废弃车站\n冲突：沈昭听见有人叫她的名字，却看不见来人。', '剧本结构', '已拆解', ['开场 · 5s', '冲突 · 6s', '悬念 · 4s']],
+      ['03', '让镜头说清楚每一件事', '镜头提示词不是一段散文，而是可以下载、导入和继续编辑的结构化数据。', 'output · JSON 分镜', '{ "shot_id": "S01_03", "camera": "slow_push_in", "duration": "05s" }', 'JSON 字段', '已生成', ['运镜 · 推近', '时长 · 05s', '情绪 · 试探']],
+      ['04', '先把资产提取出来', '人物、场景和道具分开管理，生图前先看清楚这一集要保持什么一致。', 'assets · 自动提取', '人物：沈昭\n场景：雨夜旧车站\n道具：发光玉佩', '资产清单', '已建立', ['人物 · 01', '场景 · 01', '道具 · 01']],
+      ['05', '先审图，再做视频', '图片不满意就改资产，没问题再生成视频，把试错成本放在更早、更便宜的地方。', 'render · 生成队列', '镜头 S01_01 — S01_03\n状态：2 个完成 / 1 个排队', '生成队列', '进行中', ['完成 · 02', '排队 · 01', '重试 · 00']],
+      ['06', '把成片送进剪映', '镜头、旁白和音效按时间整理好，最后一步回到你熟悉的剪辑工具完成发布。', 'export · 剪映草稿', '第 01 集 / 00:00 — 00:15\n视频片段 + 旁白 + 音效', '草稿状态', '可导出', ['视频 · 03', '音频 · 02', '草稿 · 01']]
+    ];
+    const stageIds = ['stageNo', 'stageTitle', 'stageDescription', 'stageNoteLabel', 'stageNote', 'stageOutputLabel', 'stageOutputStatus', 'stageBars'];
+    document.querySelectorAll('.workflow-step').forEach((button) => {
+      button.addEventListener('click', () => {
+        const data = workflowData[Number(button.dataset.step)];
+        document.querySelectorAll('.workflow-step').forEach((item) => item.classList.toggle('is-active', item === button));
+        document.getElementById('stageNo').textContent = data[0];
+        document.getElementById('stageTitle').textContent = data[1];
+        document.getElementById('stageDescription').textContent = data[2];
+        document.getElementById('stageNoteLabel').textContent = data[3];
+        document.getElementById('stageNote').textContent = data[4];
+        document.getElementById('stageOutputLabel').textContent = data[5];
+        document.getElementById('stageOutputStatus').textContent = data[6];
+        document.getElementById('stageBars').innerHTML = data[7].map((item) => `<div class="stage-bar">${item}</div>`).join('');
+      });
+    });
+
+    const accountRange = document.getElementById('accountRange');
+    const updateCapacity = () => {
+      const accounts = Number(accountRange.value);
+      document.getElementById('accountValue').textContent = accounts;
+      document.getElementById('clipValue').textContent = accounts * 3;
+      document.getElementById('secondsValue').textContent = accounts * 45;
+    };
+    accountRange.addEventListener('input', updateCapacity);
+
+    document.querySelectorAll('.faq-question').forEach((question) => {
+      question.addEventListener('click', () => {
+        const item = question.parentElement;
+        const answer = item.querySelector('.faq-answer');
+        const willOpen = !item.classList.contains('is-open');
+        document.querySelectorAll('.faq-item.is-open').forEach((openItem) => {
+          openItem.classList.remove('is-open');
+          openItem.querySelector('.faq-answer').style.maxHeight = null;
+        });
+        if (willOpen) {
+          item.classList.add('is-open');
+          answer.style.maxHeight = `${answer.scrollHeight}px`;
+        }
+      });
+    });
+
+    const modal = document.getElementById('modalBackdrop');
+    const openModal = () => { modal.classList.add('is-open'); document.body.classList.add('modal-open'); document.getElementById('nameInput').focus(); };
+    const closeModal = () => { modal.classList.remove('is-open'); document.body.classList.remove('modal-open'); };
+    document.querySelectorAll('.js-open-modal').forEach((button) => button.addEventListener('click', openModal));
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeModal(); });
+    document.getElementById('demoForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      document.getElementById('demoForm').style.display = 'none';
+      document.getElementById('successMessage').classList.add('is-visible');
+    });
+  </script>
+</body>
+</html>
