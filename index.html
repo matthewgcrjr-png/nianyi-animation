@@ -568,7 +568,7 @@
     .button-primary:hover { background: linear-gradient(135deg, #fff1be, #e4bf68 52%, #c49c38); }
     .button-quiet { border-color: var(--line); background: rgba(217, 180, 92, .035); }
     .hero { min-height: 820px; padding: 164px 0 80px; background: radial-gradient(ellipse at 18% 30%, rgba(217, 180, 92, .09), transparent 34%), var(--ink); }
-    .hero::before { right: 50%; background: rgba(217, 180, 92, .11); }
+    .hero::before { display: none; }
     .hero::after { right: 4%; bottom: 8%; width: 210px; background: var(--gold); opacity: .45; }
     .hero-grid { grid-template-columns: 1.1fr 1fr; gap: 50px; }
     .hero-copy { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
@@ -642,13 +642,170 @@
     @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-35%); } }
     @media (max-width: 980px) { .hero-grid { grid-template-columns: 1fr; } .hero-copy { max-width: 650px; } .hero-visual { padding-top: 0; } .hero-image-card { max-width: 740px; } }
     @media (max-width: 720px) { .container { width: min(100% - 32px, 560px); } .hero { padding-top: 112px; } .hero h1 { margin-top: 28px; font-size: clamp(39px, 10.8vw, 58px); } .hero h1 span { white-space: normal; } .hero-visual { padding-top: 0; } .hero-image-card { aspect-ratio: 1.15 / 1; } .hero-image-bottom b { font-size: 18px; } .signal-item b { font-size: 24px; } }
+
+    /* Brand, pricing and direct support details */
+    .brand-logo { overflow: hidden; background: var(--ink); }
+    .brand-logo img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.22); }
+    .nav-price-short { display: none; }
+    .nav-cta { min-width: 188px; }
+    .hero-price { display: inline-flex; align-items: baseline; gap: 11px; margin: -7px 0 25px; color: var(--orange-soft); }
+    .hero-price strong { font-family: var(--serif); font-size: 27px; }
+    .hero-price span { color: var(--muted); font-size: 11px; letter-spacing: .08em; }
+    .contact-section { background: var(--ink-2); border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
+    .contact-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; }
+    .contact-head .section-copy { max-width: 430px; margin-bottom: 7px; }
+    .contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 46px; }
+    .contact-card { display: grid; grid-template-columns: 168px 1fr; gap: 24px; align-items: center; min-height: 214px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); box-shadow: 0 18px 60px -36px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .035); }
+    .contact-card img { display: block; width: 168px; height: 168px; object-fit: contain; background: #fff; border-radius: 3px; }
+    .contact-card-label { display: inline-flex; margin-bottom: 13px; padding: 5px 8px; border: 1px solid var(--line); color: var(--orange-soft); font-size: 10px; letter-spacing: .14em; }
+    .contact-card h3 { margin: 0 0 9px; color: var(--cream); font-family: var(--serif); font-size: 25px; }
+    .contact-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .contact-card .contact-tip { display: block; margin-top: 14px; color: var(--mint); font-size: 11px; }
+    .modal-support-lead { margin: 0 0 20px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .modal-contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    .modal-contact-card { min-width: 0; padding: 10px; border: 1px solid var(--line); background: #100c07; text-align: center; }
+    .modal-contact-card img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; }
+    .modal-contact-card strong { display: block; margin-top: 8px; color: var(--cream); font-family: var(--serif); font-size: 15px; }
+    .modal-contact-card span { display: block; margin-top: 2px; color: var(--mint); font-size: 10px; }
+    @media (max-width: 720px) {
+      .nav-cta { min-width: 0; padding: 0 10px; }
+      .nav-price-full { display: none; }
+      .nav-price-short { display: inline; }
+      .contact-head { display: block; }
+      .contact-head .section-copy { margin-top: 19px; }
+      .contact-grid { grid-template-columns: 1fr; margin-top: 34px; }
+      .contact-card { grid-template-columns: 118px 1fr; gap: 15px; min-height: 158px; padding: 13px; }
+      .contact-card img { width: 118px; height: 118px; }
+      .contact-card h3 { font-size: 21px; }
+      .contact-card p { font-size: 12px; }
+      .modal { padding: 24px 18px; }
+      .modal-contact-card { padding: 7px; }
+      .modal-contact-card strong { font-size: 14px; }
+    }
+
+    /* Production asset library: show the reusable visual standard behind every shot. */
+    .asset-library-section {
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 88% 12%, rgba(217, 180, 92, .11), transparent 28%), var(--ink-2);
+    }
+    .asset-library-section::before {
+      position: absolute;
+      top: 0;
+      right: 12%;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(180deg, transparent, rgba(217, 180, 92, .16), transparent);
+      content: "";
+      pointer-events: none;
+    }
+    .asset-library-head { display: flex; align-items: end; justify-content: space-between; gap: 42px; }
+    .asset-library-head .section-copy { max-width: 470px; margin-bottom: 8px; }
+    .asset-highlights { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 42px; }
+    .asset-highlight {
+      min-height: 104px;
+      padding: 17px 18px;
+      border: 1px solid rgba(217, 180, 92, .24);
+      border-radius: 10px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .065), rgba(217, 180, 92, .035));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 22px 55px -42px rgba(0, 0, 0, .9);
+      backdrop-filter: blur(16px);
+    }
+    .asset-highlight b { display: block; color: var(--cream); font-family: var(--serif); font-size: 18px; }
+    .asset-highlight span { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+    .asset-highlight i { display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px rgba(126, 217, 87, .65); }
+    .asset-library-layout { display: grid; grid-template-columns: .86fr 1.14fr; gap: 15px; margin-top: 15px; }
+    .asset-feature, .asset-gallery-card {
+      position: relative;
+      overflow: hidden;
+      margin: 0;
+      border: 1px solid rgba(217, 180, 92, .26);
+      border-radius: 10px;
+      background: #0d0a06;
+      box-shadow: 0 28px 70px -40px rgba(0, 0, 0, .95), inset 0 1px 0 rgba(255, 255, 255, .08);
+    }
+    .asset-feature { min-height: 500px; }
+    .asset-feature img, .asset-gallery-card img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease, filter .5s ease; }
+    .asset-feature img { position: absolute; inset: 0; object-position: center; }
+    .asset-feature::after, .asset-gallery-card::after { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 7, 5, .02) 35%, rgba(8, 7, 5, .88)); content: ""; pointer-events: none; }
+    .asset-feature:hover img, .asset-gallery-card:hover img { transform: scale(1.035); filter: saturate(1.06); }
+    .asset-feature figcaption, .asset-gallery-card figcaption { position: absolute; z-index: 1; right: 20px; bottom: 18px; left: 20px; }
+    .asset-feature figcaption b, .asset-gallery-card figcaption b { display: block; color: var(--cream); font-family: var(--serif); font-size: 21px; }
+    .asset-feature figcaption p { max-width: 390px; margin: 8px 0 0; color: rgba(237, 227, 205, .72); font-size: 12px; line-height: 1.7; }
+    .asset-kicker { display: block; margin-bottom: 8px; color: var(--orange-soft); font-size: 9px; letter-spacing: .16em; }
+    .asset-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    .asset-gallery-card { min-height: 242px; }
+    .asset-gallery-card img { position: absolute; inset: 0; object-position: center; }
+    .asset-gallery-card figcaption b { font-size: 17px; }
+    .asset-gallery-card figcaption span { display: block; margin-top: 4px; color: rgba(237, 227, 205, .67); font-size: 10px; }
+    .asset-library-foot { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 17px; padding-top: 18px; border-top: 1px solid var(--line-soft); color: var(--muted); font-size: 12px; }
+    .asset-library-foot strong { color: var(--orange-soft); font-weight: 600; }
+    @media (max-width: 980px) {
+      .asset-library-head { display: block; }
+      .asset-library-head .section-copy { margin-top: 20px; }
+      .asset-highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .asset-library-layout { grid-template-columns: 1fr; }
+      .asset-feature { min-height: 405px; }
+    }
+    @media (max-width: 720px) {
+      .asset-library-section { padding-top: 82px; }
+      .asset-highlights { gap: 8px; margin-top: 30px; }
+      .asset-highlight { min-height: 92px; padding: 13px; }
+      .asset-highlight b { font-size: 15px; }
+      .asset-highlight span { margin-top: 5px; font-size: 10px; }
+      .asset-library-layout { margin-top: 10px; }
+      .asset-gallery { grid-template-columns: 1fr; gap: 10px; }
+      .asset-feature { min-height: 245px; }
+      .asset-gallery-card { min-height: 185px; }
+      .asset-feature figcaption, .asset-gallery-card figcaption { right: 15px; bottom: 14px; left: 15px; }
+      .asset-feature figcaption b { font-size: 18px; }
+      .asset-feature figcaption p { font-size: 11px; }
+      .asset-library-foot { display: block; margin-top: 13px; font-size: 11px; line-height: 1.7; }
+    }
+
+    /* Distributed visual proof: each poster earns a place in the story instead of crowding one gallery. */
+    .hero-icon-rail { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 25px; color: var(--muted); font-size: 11px; }
+    .hero-image-card img { object-fit: contain; object-position: center; background: #0b121e; }
+    .hero-icon-rail span { display: inline-flex; align-items: center; gap: 7px; }
+    .hero-icon-rail i { display: grid; width: 21px; height: 21px; place-items: center; border: 1px solid rgba(217, 180, 92, .42); border-radius: 50%; color: var(--orange-soft); font-size: 11px; font-style: normal; box-shadow: 0 0 18px rgba(217, 180, 92, .11); }
+    .tool-poster { position: relative; overflow: hidden; min-height: 340px; margin: 55px 0 0; border: 1px solid var(--line); border-radius: 9px; background: #0d0a06; box-shadow: 0 28px 70px -40px rgba(0, 0, 0, .95), inset 0 1px 0 rgba(255, 255, 255, .07); }
+    .tool-poster img { display: block; width: 100%; height: 100%; min-height: 340px; object-fit: cover; object-position: center; filter: saturate(.92) contrast(1.03); transition: transform .55s ease, filter .55s ease; }
+    .tool-poster::after { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 7, 5, .02) 28%, rgba(8, 7, 5, .89)); content: ""; pointer-events: none; }
+    .tool-poster:hover img { transform: scale(1.018); filter: saturate(1.04) contrast(1.05); }
+    .tool-poster figcaption { position: absolute; z-index: 1; right: 28px; bottom: 24px; left: 28px; max-width: 620px; }
+    .tool-poster figcaption span { display: block; margin-bottom: 9px; color: var(--orange-soft); font-size: 9px; letter-spacing: .18em; }
+    .tool-poster figcaption b { display: block; color: var(--cream); font-family: var(--serif); font-size: clamp(21px, 3vw, 32px); }
+    .tool-poster figcaption p { max-width: 570px; margin: 8px 0 0; color: rgba(237, 227, 205, .73); font-size: 12px; line-height: 1.7; }
+    .tool-poster-style { min-height: 300px; }
+    .tool-poster-style img { min-height: 300px; }
+    .asset-highlight-icon { display: inline-grid !important; width: 23px; height: 23px; margin: 0 7px 0 0; place-items: center; border: 1px solid rgba(217, 180, 92, .45); border-radius: 50%; color: var(--orange-soft); font-size: 12px; line-height: 1; vertical-align: -5px; }
+    .asset-library-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; margin-top: 27px; }
+    .asset-library-grid .asset-gallery-card { min-height: 325px; }
+    .asset-library-grid .asset-gallery-card img { min-height: 325px; }
+    .asset-library-grid .asset-gallery-card figcaption b { font-size: 20px; }
+    .asset-card-no { display: block !important; margin: 0 0 8px !important; color: var(--orange-soft) !important; font-size: 9px !important; letter-spacing: .16em; }
+    .cursor-particles { position: fixed; z-index: 30; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .7; }
+    @media (max-width: 720px) {
+      .hero-icon-rail { gap: 8px 12px; margin-top: 20px; font-size: 10px; }
+      .hero-icon-rail i { width: 19px; height: 19px; }
+      .tool-poster { min-height: 230px; margin-top: 38px; }
+      .tool-poster img, .tool-poster-style img { min-height: 230px; }
+      .tool-poster figcaption { right: 15px; bottom: 15px; left: 15px; }
+      .tool-poster figcaption b { font-size: 18px; }
+      .tool-poster figcaption p { font-size: 10px; }
+      .tool-poster-style { min-height: 210px; }
+      .asset-library-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 17px; }
+      .asset-library-grid .asset-gallery-card, .asset-library-grid .asset-gallery-card img { min-height: 220px; }
+      .asset-library-grid .asset-gallery-card figcaption b { font-size: 17px; }
+    }
   </style>
 </head>
 <body>
+  <canvas class="cursor-particles" id="cursorParticles" aria-hidden="true"></canvas>
   <header class="site-nav" id="siteNav">
     <div class="container nav-inner">
       <a class="brand" href="#top" aria-label="念一动漫首页">
-        <span class="brand-mark">NY</span>
+        <span class="brand-mark brand-logo"><img src="assets/nianyi-logo.png" alt="念一动漫 logo"></span>
         <span class="brand-word">念一动漫<small>NIAN YI ANIMATION</small></span>
       </a>
       <nav class="nav-links" aria-label="页面导航">
@@ -657,9 +814,11 @@
         <a href="#features">核心能力</a>
         <a href="#capacity">成本</a>
         <a href="#showcase">界面展示</a>
+        <a href="#asset-library">资产标准</a>
         <a href="#faq">常见问题</a>
+        <a href="#contact">客服咨询</a>
       </nav>
-      <button class="button button-primary nav-cta js-open-modal">预约演示 <span aria-hidden="true">↗</span></button>
+      <button class="button button-primary nav-cta js-open-modal"><span class="nav-price-full">¥399 / 年 · 免费更新</span><span class="nav-price-short">¥399 / 年</span></button>
     </div>
   </header>
 
@@ -670,8 +829,9 @@
           <div class="eyebrow">NIANYI ANIMATION · WINDOWS WORKSPACE</div>
           <h1>一个人，一台电脑<br><span>也能做出一集漫剧。</span></h1>
           <p class="hero-lead">念一动漫把小说文案、专业剧本、JSON 分镜、角色资产、生图、生视频、配音和剪映草稿，收进一条真正能跟着做的创作流水线。</p>
+          <div class="hero-price"><strong>¥399 / 年</strong><span>免费更新 · 一对一客服咨询</span></div>
           <div class="hero-actions">
-            <button class="button button-primary button-arrow js-open-modal">预约演示</button>
+            <button class="button button-primary button-arrow js-open-modal">立即咨询</button>
             <a class="button button-quiet" href="#workflow">看 6 步成片流程 <span aria-hidden="true">↓</span></a>
           </div>
           <div class="hero-notes">
@@ -679,11 +839,12 @@
             <span class="hero-note">全程中文提示词</span>
             <span class="hero-note">一键衔接剪映</span>
           </div>
+          <div class="hero-icon-rail" aria-label="创作模块"><span><i aria-hidden="true">✦</i>角色资产</span><span><i aria-hidden="true">◌</i>镜头分镜</span><span><i aria-hidden="true">⌁</i>声音参考</span></div>
         </div>
 
         <div class="hero-visual reveal">
           <div class="hero-image-card" aria-label="念一动漫品牌视觉展示">
-            <img src="assets/studio-storyboard.png" alt="念一动漫分镜工作台软件界面">
+            <img src="assets/workflow-skill.png" alt="念一动漫专业级 AI 漫剧创作工作流视觉图">
             <div class="hero-image-overlay"></div>
             <div class="hero-image-top"><span>NIANYI / VISUAL ENGINE</span><span class="hero-live"><i></i> LIVE WORKSPACE</span></div>
             <div class="hero-image-bottom"><b>从剧本到成片，一套系统全部完成</b><span>角色 · 场景 · 分镜 · 视频 · 音频</span></div>
@@ -790,6 +951,7 @@
           <div class="proof-panel reveal"><div class="proof-panel-head"><b>原始文案</b><span>复制 · 粘贴</span></div><div class="proof-copy">她在车站醒来，手里多了一枚发光的玉佩。远处传来脚步声，她不敢回头，却听见有人叫出她的名字。<br><br><mark>“沈昭。”</mark></div></div>
           <div class="proof-panel reveal"><div class="proof-panel-head"><b>JSON 分镜</b><span>下载 · 导入创作台</span></div><div class="proof-json">{<br>&nbsp; <span class="k">"shot_id"</span>: <span class="s">"S01_03"</span>,<br>&nbsp; <span class="k">"characters"</span>: [<span class="s">"沈昭"</span>],<br>&nbsp; <span class="k">"scene"</span>: <span class="s">"雨夜旧车站"</span>,<br>&nbsp; <span class="k">"props"</span>: [<span class="s">"发光玉佩"</span>],<br>&nbsp; <span class="k">"camera"</span>: <span class="s">"slow_push_in"</span>,<br>&nbsp; <span class="k">"duration"</span>: <span class="n">5</span><br>}</div><div class="proof-foot"><span class="proof-tag">人物资产 01</span><span class="proof-tag">场景资产 01</span><span class="proof-tag">道具资产 01</span></div></div>
         </div>
+        <figure class="tool-poster tool-poster-system reveal"><img src="assets/nianyi-system.png" alt="念一动漫系统能力总览图"><figcaption><span>NIANYI SYSTEM / 02</span><b>把脚本、资产和成片放进同一条链路</b><p>从小说、角色、场景到批量视频和剪映工程，每一步都有可继续编辑的中间结果。</p></figcaption></figure>
       </div>
     </section>
 
@@ -806,6 +968,29 @@
             <figure class="showcase-card reveal"><img src="assets/style-library.png" alt="念一动漫风格库界面截图"><figcaption><b>风格库</b><span>63 项风格资产，快速切换视觉方向</span></figcaption></figure>
           </div>
         </div>
+        <figure class="tool-poster tool-poster-style reveal"><img src="assets/style-gallery.png" alt="念一动漫多种漫剧视觉风格展示图"><figcaption><span>STYLE LIBRARY / 03</span><b>先定视觉语言，再让每个镜头保持同一套气质</b><p>国漫、2D 动漫、真人影视剧、新中式美学和宋式田园，都可以作为项目的视觉起点。</p></figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section asset-library-section" id="asset-library">
+      <div class="container">
+        <div class="asset-library-head">
+          <div><div class="eyebrow reveal">PRODUCTION-GRADE ASSETS</div><h2 class="section-title reveal">资产先统一，<br><em>镜头才不会失控。</em></h2></div>
+          <p class="section-copy reveal">人物、场景、道具和镜头参考放在同一组资产板里。先把一致性和细节交代清楚，再进入生图和视频，后面换镜头也不用重新猜。</p>
+        </div>
+        <div class="asset-highlights">
+          <article class="asset-highlight reveal"><b><span class="asset-highlight-icon" aria-hidden="true">◫</span>三视图</b><span>正面、侧面、背面都能作为后续镜头参考。</span></article>
+          <article class="asset-highlight reveal"><b><span class="asset-highlight-icon" aria-hidden="true">⌗</span>细节特写</b><span>材质、结构、纹理和关键道具一并留档。</span></article>
+          <article class="asset-highlight reveal"><b><span class="asset-highlight-icon" aria-hidden="true">⌁</span>声音波形</b><span>角色附带音色参考，配音更容易保持统一。</span></article>
+          <article class="asset-highlight reveal"><b><span class="asset-highlight-icon" aria-hidden="true">✦</span>镜头连续性</b><span>同一组资产跨镜头复用，减少画面跳变。</span></article>
+        </div>
+        <div class="asset-library-grid">
+          <figure class="asset-gallery-card reveal"><img src="assets/asset-character-sheet.png" alt="角色三视图、细节特写和声音波形资产图"><figcaption><span class="asset-card-no">01 / CHARACTER</span><b>人物资产 · 三视图 + 声音波形</b><span>角色比例、服装细节和音色参考一次整理</span></figcaption></figure>
+          <figure class="asset-gallery-card reveal"><img src="assets/asset-scene-sheet.png" alt="场景多视角连续性参考资产图"><figcaption><span class="asset-card-no">02 / SCENE</span><b>场景资产 · 多视角连续性</b><span>同一环境的远景、平视和局部镜头都可复用</span></figcaption></figure>
+          <figure class="asset-gallery-card reveal"><img src="assets/asset-prop-sheet.png" alt="道具三视图、材质细节和尺寸参考资产图"><figcaption><span class="asset-card-no">03 / PROP</span><b>道具资产 · 结构与材质</b><span>正侧背三视图，附带结构、材质和尺寸说明</span></figcaption></figure>
+          <figure class="asset-gallery-card reveal"><img src="assets/studio-storyboard.png" alt="镜头分镜与资产关系参考图"><figcaption><span class="asset-card-no">04 / SHOT</span><b>镜头资产 · 分镜关系</b><span>把人物、场景和道具放进同一条可执行的镜头关系里</span></figcaption></figure>
+        </div>
+        <div class="asset-library-foot reveal"><span><strong>资产检查清单</strong>　人物 / 场景 / 道具 / 音色 / 尺寸 / 材质</span><span>先审图，再进入视频生成</span></div>
       </div>
     </section>
 
@@ -843,13 +1028,32 @@
       <div class="faq-item"><button class="faq-question">生成后能直接发布吗？</button><div class="faq-answer"><p>工具可以把视频片段和音频整理到剪映草稿，最终仍建议你在剪映里完成审片、字幕、封面和发布设置。</p></div></div>
     </div></div></section>
 
-    <section class="closing"><div class="container"><h2 class="reveal">先把第一集做出来，<br>再谈你的漫剧计划。</h2><p class="reveal">预约一次演示，看看念一动漫怎样把一段小说文案，变成可以继续剪、继续发布的镜头。</p><button class="button button-primary button-arrow js-open-modal reveal">预约演示</button><div class="closing-note reveal">一次看懂流程 · 按实际账号和模型情况沟通</div></div></section>
+    <section class="section contact-section" id="contact">
+      <div class="container">
+        <div class="contact-head">
+          <div><div class="eyebrow reveal">ONE-TO-ONE SUPPORT</div><h2 class="section-title reveal">想开始做漫剧，<br><em>先找客服聊聊。</em></h2></div>
+          <p class="section-copy reveal">扫码添加客服微信，了解软件功能、账号配置和你的第一集制作路径。两个客服都可以一对一咨询。</p>
+        </div>
+        <div class="contact-grid">
+          <article class="contact-card reveal">
+            <img src="assets/wechat-service-1.jpg" alt="客服 1 微信二维码">
+            <div><span class="contact-card-label">CUSTOMER SERVICE 01</span><h3>客服 1</h3><p>适合先了解软件流程、价格和演示安排。</p><span class="contact-tip">微信扫码 · 一对一咨询</span></div>
+          </article>
+          <article class="contact-card reveal">
+            <img src="assets/wechat-service-2.jpg" alt="客服 2 微信二维码">
+            <div><span class="contact-card-label">CUSTOMER SERVICE 02</span><h3>客服 2</h3><p>适合咨询账号配置、模型接入和使用问题。</p><span class="contact-tip">微信扫码 · 一对一咨询</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing"><div class="container"><h2 class="reveal">先把第一集做出来，<br>再谈你的漫剧计划。</h2><p class="reveal">¥399 / 年，免费更新。预约一次演示，看看念一动漫怎样把一段小说文案，变成可以继续剪、继续发布的镜头。</p><button class="button button-primary button-arrow js-open-modal reveal">立即咨询</button><div class="closing-note reveal">一对一客服 · 按实际账号和模型情况沟通</div></div></section>
   </main>
 
-  <footer><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark">NY</span><span class="brand-word">念一动漫<small>NIAN YI ANIMATION</small></span></a><span>把故事交给创作台，把时间留给成片。</span></div></footer>
+  <footer><div class="container footer-inner"><a class="brand" href="#top"><span class="brand-mark brand-logo"><img src="assets/nianyi-logo.png" alt="念一动漫 logo"></span><span class="brand-word">念一动漫<small>NIAN YI ANIMATION</small></span></a><span>¥399 / 年 · 免费更新 · 把故事交给创作台，把时间留给成片。</span></div></footer>
 
   <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal"><button class="modal-close" id="modalClose" aria-label="关闭">×</button><h2 id="modalTitle">预约念一动漫演示</h2><p class="modal-lead">留下一个方便联系的方式，后续把演示入口和配置建议发给你。</p><form id="demoForm"><div class="form-row"><label for="nameInput">怎么称呼你</label><input id="nameInput" name="name" placeholder="例如：小林" required></div><div class="form-row"><label for="contactInput">微信 / 手机号</label><input id="contactInput" name="contact" placeholder="方便联系的方式" required></div><button class="button button-primary" type="submit">提交预约 <span aria-hidden="true">↗</span></button><p class="form-note">当前页面未连接后端，提交后会显示本地确认状态。将页面用于直播间前，可在脚本底部接入你的表单或二维码。</p></form><div class="success-message" id="successMessage">已收到预约信息。请把这里替换成你的客服微信或真实表单提交地址。</div></div>
+    <div class="modal"><button class="modal-close" id="modalClose" aria-label="关闭">×</button><h2 id="modalTitle">添加微信客服</h2><p class="modal-support-lead">¥399 / 年 · 免费更新。扫码添加客服微信，直接咨询演示、价格和使用配置。</p><div class="modal-contact-grid"><div class="modal-contact-card"><img src="assets/wechat-service-1.jpg" alt="客服 1 微信二维码"><strong>客服 1</strong><span>扫码添加微信</span></div><div class="modal-contact-card"><img src="assets/wechat-service-2.jpg" alt="客服 2 微信二维码"><strong>客服 2</strong><span>扫码添加微信</span></div></div></div>
   </div>
 
   <script>
@@ -932,17 +1136,54 @@
     });
 
     const modal = document.getElementById('modalBackdrop');
-    const openModal = () => { modal.classList.add('is-open'); document.body.classList.add('modal-open'); document.getElementById('nameInput').focus(); };
+    const openModal = () => { modal.classList.add('is-open'); document.body.classList.add('modal-open'); const focusTarget = document.getElementById('modalClose'); if (focusTarget) focusTarget.focus(); };
     const closeModal = () => { modal.classList.remove('is-open'); document.body.classList.remove('modal-open'); };
     document.querySelectorAll('.js-open-modal').forEach((button) => button.addEventListener('click', openModal));
     document.getElementById('modalClose').addEventListener('click', closeModal);
     modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeModal(); });
-    document.getElementById('demoForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-      document.getElementById('demoForm').style.display = 'none';
-      document.getElementById('successMessage').classList.add('is-visible');
-    });
+
+    const particleCanvas = document.getElementById('cursorParticles');
+    const particleContext = particleCanvas ? particleCanvas.getContext('2d') : null;
+    const particles = [];
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const resizeParticleCanvas = () => {
+      if (!particleCanvas || !particleContext) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      particleCanvas.width = Math.round(window.innerWidth * ratio);
+      particleCanvas.height = Math.round(window.innerHeight * ratio);
+      particleCanvas.style.width = `${window.innerWidth}px`;
+      particleCanvas.style.height = `${window.innerHeight}px`;
+      particleContext.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+    const drawParticles = () => {
+      if (!particleCanvas || !particleContext) return;
+      particleContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      for (let index = particles.length - 1; index >= 0; index -= 1) {
+        const particle = particles[index];
+        particle.life -= .026;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.vy += .002;
+        if (particle.life <= 0) { particles.splice(index, 1); continue; }
+        particleContext.globalAlpha = particle.life * .52;
+        particleContext.fillStyle = particle.color;
+        particleContext.beginPath();
+        particleContext.arc(particle.x, particle.y, particle.size * particle.life, 0, Math.PI * 2);
+        particleContext.fill();
+      }
+      particleContext.globalAlpha = 1;
+      window.requestAnimationFrame(drawParticles);
+    };
+    if (particleCanvas && particleContext && !reduceMotion && window.innerWidth > 720) {
+      resizeParticleCanvas();
+      window.addEventListener('resize', resizeParticleCanvas, { passive: true });
+      window.addEventListener('pointermove', (event) => {
+        if (particles.length > 90) particles.splice(0, particles.length - 90);
+        particles.push({ x: event.clientX, y: event.clientY, vx: (Math.random() - .5) * .22, vy: -Math.random() * .22, size: 1.5 + Math.random() * 2.1, life: .8, color: Math.random() > .4 ? '#f4e2a0' : '#7ed957' });
+      }, { passive: true });
+      window.requestAnimationFrame(drawParticles);
+    }
   </script>
 </body>
 </html>
